@@ -2,9 +2,9 @@ package information_retrival;
 
 public class Pair {
     private String token = null;
-    private int docId = 0;
+    private String docId = null;
 
-    public Pair(String x, int y)
+    public Pair(String x, String y)
     {
         this.token = x;
         this.docId = y;
@@ -23,10 +23,11 @@ public class Pair {
         this.token = x;
     }
 
-    public int getdocId() {
+    public String getdocId() {
         return docId;
     }
-    public void setdocId(int y) {
+
+    public void setdocId(String y) {
         this.docId = y;
     }
 }
