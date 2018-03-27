@@ -14,7 +14,7 @@ public class ProjectTest {
 		ArrayList<Pair> token_docId = new ArrayList<Pair>();
 
 		String fileName = null;
-		int docId = 0;
+		String docId = null;
 		
 		//fileList = ProjectToolkit.listDir("C:/Divya/NTU/Information Retrival/project/test_mail");
 		fileList = ProjectToolkit.listDir("C:/Divya/NTU/Information Retrival/project/HillaryEmails");
@@ -30,9 +30,9 @@ public class ProjectTest {
 		
 		ArrayList<Pair> tupleNew = LinguisticModules.rmSymbolLower(token_docId);
 		ArrayList<Pair> tupleStem = LinguisticModules.stemming(tupleNew);
-		for(int i=0; i < tupleStem.size(); i++){
-			System.out.println(((Pair) tupleStem.get(i)).getToken());
-			System.out.println(((Pair) tupleStem.get(i)).getdocId());
-		}
+
+		//for(int i=0; i < tupleStem.size(); i++){
+		//	System.out.println(((Pair) tupleStem.get(i)).getdocId());
+		//}
 }
 }
