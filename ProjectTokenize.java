@@ -6,25 +6,23 @@ import java.util.Arrays;
 
 
 public class ProjectTokenize {
-public static ArrayList<Pair> tokenize(String content, int docId) {
-String[] tokens = null;
-ArrayList<Pair> token_docId = new ArrayList<Pair>();
-try {
-	tokens = content.split("\\s+");
-	Arrays.toString(tokens);
-	for(int i=0; i < tokens.length; i++){
-		Pair p = new Pair(tokens[i].toString(),docId);
-		token_docId.add(p);
+	public static ArrayList<Pair> tokenize(String content, String docId) {
+	String[] tokens = null;
+	ArrayList<Pair> token_docId = new ArrayList<Pair>();
+	try {
+		tokens = content.split("\\s+");
+		Arrays.toString(tokens);
+		for(int i=0; i < tokens.length; i++){
+			Pair p = new Pair(tokens[i].toString(),docId);
+			token_docId.add(p);
+		}		
+	} catch (Exception e) {
+		e.printStackTrace();
 	}
-	
-} catch (Exception e) {
-	e.printStackTrace();
-}
-return token_docId;
-}
+	return token_docId;
+	}
 
-
-	public static int getDocId(String fileName) {
+	public static String getDocId(String fileName) {
 		int docId = 0;
 		try {
 			String[] fileNameBits = fileName.split("\\.");
@@ -32,7 +30,6 @@ return token_docId;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return docId;
+		return Integer.toString(docId);
 	}
-	
 }
