@@ -80,71 +80,28 @@ public class IRApplication {
 	public static void indexing() {
 		//tokenize corpus
 		//Divya's placeholder
-		public class ProjectTokenize {
-			public static ArrayList<Pair> tokenize(String content, String docId) {
-			String[] tokens = null;
-			ArrayList<Pair> token_docId = new ArrayList<Pair>();
-			try {
-				tokens = content.split("\\s+");
-				Arrays.toString(tokens);
-				for(int i=0; i < tokens.length; i++){
-					Pair p = new Pair(tokens[i].toString(),docId);
-					token_docId.add(p);
-				}		
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			return token_docId;
-			}
+		ArrayList<String> fileList = new ArrayList<String>();
+		ArrayList<Pair> token_docId = new ArrayList<Pair>();
 
-			public static String getDocId(String fileName) {
-				int docId = 0;
-				try {
-					String[] fileNameBits = fileName.split("\\.");
-					docId = Integer.parseInt(fileNameBits[0]);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				return Integer.toString(docId);
-			}
+		String fileName = null;
+		String docId = null;
+		
+		//fileList = ProjectToolkit.listDir("C:/Divya/NTU/Information Retrival/project/test_mail");
+		fileList = ProjectToolkit.listDir("C:/Divya/NTU/Information Retrival/project/HillaryEmails");
+		
+		for(int i = 0; i < fileList.size(); i++){
+			String content = ProjectToolkit.readTextFile(fileList.get(i));
+			fileName = new File(fileList.get(i)).getName();
+			docId = ProjectTokenize.getDocId(fileName);
+			
+			ArrayList<Pair> token_docIdTemp = ProjectTokenize.tokenize(content,docId);
+			token_docId.addAll(token_docIdTemp);	
 		}
-
 		
 		//modify tokens using linguistic modules
 		//Divya's placeholder
-		public class LinguisticModules {
-			public static ArrayList<Pair> rmSymbolLower(ArrayList<Pair> tuple) {
-				ArrayList<Pair> tuple_new = new ArrayList<Pair>();
-				try {
-					for(int i=0; i < tuple.size(); i++){ 
-						Pair p = new Pair(((Pair) tuple.get(i)).getToken().replaceAll("[^a-zA-Z0-9]", "").toLowerCase(),((Pair) tuple.get(i)).getdocId());
-						tuple_new.add(p);
-					}							
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				return tuple_new;
-				}
-			
-			public static ArrayList<Pair> stemming(ArrayList<Pair> tuple) {
-				ArrayList<Pair> tuple_new = new ArrayList<Pair>();
-				PorterStemmer porterStemmer = new PorterStemmer();
-
-				try {
-					for(int i=0; i < tuple.size(); i++){
-						String stem = porterStemmer.stemWord(((Pair) tuple.get(i)).getToken());
-						if(stem.isEmpty()) i++;
-						else{
-							Pair p = new Pair(stem,((Pair) tuple.get(i)).getdocId());
-							tuple_new.add(p);					
-						}
-					}			
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				return tuple_new;
-				}
-			}
+		ArrayList<Pair> tupleNew = LinguisticModules.rmSymbolLower(token_docId);
+		ArrayList<Pair> tupleStem = LinguisticModules.stemming(tupleNew);
 
 		
 		//sort modified token-docId pairs
