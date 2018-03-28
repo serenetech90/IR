@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -8,15 +9,23 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
+import information_retrival.LinguisticModules;
+import information_retrival.Pair;
+import information_retrival.ProjectTokenize;
+import information_retrival.ProjectToolkit;
+
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.awt.event.ActionEvent;
 import java.lang.instrument.Instrumentation;
-
+import information_retrival.*;
+	
 public class IRApplication {
 	private static String INPUT_DIR = "C:/Users/TANS0348/Desktop/testfiles/";
-	private static Map<Entry<String,Integer>,LinkedList> INDEX = new LinkedHashMap<Entry<String,Integer>,LinkedList>();
+	private static Map<String,LinkedList> INDEX = new LinkedHashMap<String,LinkedList>();
 	
 	public IRApplication() {
 		JFrame guiFrame = new JFrame();
@@ -82,12 +91,12 @@ public class IRApplication {
 		//Divya's placeholder
 		ArrayList<String> fileList = new ArrayList<String>();
 		ArrayList<Pair> token_docId = new ArrayList<Pair>();
-
+        
 		String fileName = null;
 		String docId = null;
 		
 		//fileList = ProjectToolkit.listDir("C:/Divya/NTU/Information Retrival/project/test_mail");
-		fileList = ProjectToolkit.listDir("C:/Divya/NTU/Information Retrival/project/HillaryEmails");
+		fileList = ProjectToolkit.listDir("/home/serene/Documents/HillaryEmails/");
 		
 		for(int i = 0; i < fileList.size(); i++){
 			String content = ProjectToolkit.readTextFile(fileList.get(i));
@@ -105,11 +114,12 @@ public class IRApplication {
 
 		
 		//sort modified token-docId pairs
-		//Serene's placeholder
-		
+		//Serene's placeholder		
 		//transform token-docId pairs into dictionary and postings
 		//Serene's placeholder
 		//this step should update INDEX
+		INDEX = sortTokens.main(tupleStem);
+		
 	}
 	
 	public static void showProcessingTime(String processDescription, long startTime, long endTime) {
