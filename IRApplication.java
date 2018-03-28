@@ -96,7 +96,8 @@ public class IRApplication {
 		String docId = null;
 		
 		//fileList = ProjectToolkit.listDir("C:/Divya/NTU/Information Retrival/project/test_mail");
-		fileList = ProjectToolkit.listDir("/home/serene/Documents/HillaryEmails/");
+		String workingDir = System.getProperty("user.dir");
+		fileList = ProjectToolkit.listDir(workingDir.concat("/Information Retrival/project/HillaryEmails"));
 		
 		for(int i = 0; i < fileList.size(); i++){
 			String content = ProjectToolkit.readTextFile(fileList.get(i));
