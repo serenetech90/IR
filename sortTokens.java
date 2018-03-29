@@ -13,10 +13,10 @@ public class sortTokens {
 	
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static Map<String,LinkedList> main(ArrayList<Pair> list) {
+	public static Map<String,Posting> main(ArrayList<Pair> list) {
 		// TODO Auto-generated method stub
 		// Sorting tokens
-				
+
 		class comparator implements Comparator <Pair>{
 			@Override
 			public int compare(Pair o1, Pair o2) {
@@ -30,19 +30,18 @@ public class sortTokens {
 				else if( o1.getdocId().compareTo(o2.getdocId())>0)
 					return 1;
 				return 0;
-			}			
+			}
 		}
 		
 		comparator c = new comparator();
 		list.sort(c);
-		Map<String,LinkedList> index = new LinkedHashMap<String,LinkedList>();
+		Map<String, Posting> index = new LinkedHashMap<String,Posting>();		
 		
-		
-		int j = 0;
-		ArrayList ll = new ArrayList<>();
+		int i = 0 , j = 0;
+		LinkedList<String> ll = new LinkedList<String>();
 		Entry<String,Integer> entry ;
-		for( int i = 0; i < list.size()-2; i = j) {
-			
+				
+		do {
 			entry = new AbstractMap.SimpleEntry(list.get(i).getToken(), 1) ; 
 			
 			ll.add(list.get(i).getdocId());
@@ -52,24 +51,26 @@ public class sortTokens {
 				j = i+1;
 				// O(m) where m << n in practical cases there won't be an entire index all of same token keyword				
 				do {
-					entry.setValue(entry.getValue()+1);
-					ll.add(list.get(j+1).getdocId());
+					
+					if (!ll.contains(list.get(j).getdocId())) {
+						entry.setValue(entry.getValue()+1);
+						ll.add(list.get(j).getdocId());
+					}
 					++j;
-				}while(entry.getKey().equals(list.get(j).getToken()));
-				
-			}
-			ll.add(0, entry.getValue());
-			index.put(entry.getKey(),new LinkedList(ll)) ;
+				}while(entry.getKey().equals(list.get(j).getToken()));		
+				i = j;
+			}			
+			else 
+				i++;
+			index.put(entry.getKey(),new Posting(entry.getValue(), new LinkedList<String>(ll))) ;
 			
 			ll.clear();
 			//ll = new LinkedList<>();
-			j++;
-			
-		}
-		
+            			
+		}while(i < list.size()-2);
 		//Print Map contents
-//		System.out.println(index.keySet().toString());
-//		System.out.println(index.values().toString());	
+		//System.out.println(index.keySet().toString());
+		//System.out.println(index.values().toString());	
 		System.out.println("Sorting index is done !");	
 		return index;
 	}
