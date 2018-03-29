@@ -1,9 +1,7 @@
-package information_retrival;
-
 public class Pair {
-    private String token = null;
-    private String docId = null;
-
+    private String token;
+    private String docId;
+    
     public Pair(String x, String y)
     {
         this.token = x;
