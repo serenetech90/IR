@@ -1,31 +1,26 @@
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import information_retrival.LinguisticModules;
-import information_retrival.Pair;
-import information_retrival.ProjectTokenize;
-import information_retrival.ProjectToolkit;
-
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.awt.event.ActionEvent;
-import java.lang.instrument.Instrumentation;
-import information_retrival.*;
 	
 public class IRApplication {
-	private static String INPUT_DIR = "C:/Users/TANS0348/Desktop/testfiles/";
-	private static Map<String,LinkedList> INDEX = new LinkedHashMap<String,LinkedList>();
+	private static String CORPUS_DIR = "C:/Users/TANS0348/Desktop/testfiles2/";
+	//private static Map<String, Posting> INDEX = new LinkedHashMap<String, Posting>();
+	private static Map<String, LinkedList> INDEX = new LinkedHashMap<String, LinkedList>();
+	
 	
 	public IRApplication() {
 		JFrame guiFrame = new JFrame();
@@ -50,12 +45,14 @@ public class IRApplication {
 		
 		tfSearch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+            	/*
             	long startQuery = System.currentTimeMillis();
-            	String query = tfSearch.getText();
+            	String query = tfSearch.getText().trim();
             	ArrayList<String> results = processQuery(query);
             	taResults.setText(String.join("\n", results));
             	long endQuery = System.currentTimeMillis();
             	showProcessingTime("query '" + query + "'", startQuery, endQuery);
+            	*/
             }
         });
 		
@@ -63,65 +60,85 @@ public class IRApplication {
 		guiFrame.setVisible(true);
 	}
 
-	public static String[] tokenizeQuery(String query) {
-		return null; //placeholder
-	}
-	
-	public static String[] transformQueryTokens(String[] tokens) {
-		return null; //placeholder
-	}
-	
+	/*
 	public static ArrayList<String> processQuery(String query) { 
-    	String[] tokens = tokenizeQuery(query);
-    	String[] modifiedTokens = transformQueryTokens(tokens);
-		
-    	//get the frequency and posting lists for the modified tokens
-    	//Sang Sang's placeholder
+    	ArrayList<String> tokens = ProjectTokenizer.tokenizeQuery(query);
+    	ArrayList<String> modifiedTokens = LinguisticModules.modifyQueryTokens(tokens);
+    
+    	//get the posting list for the query
+    	List<Posting> sortedPostings =  new ArrayList<Posting>();
+    	for(String mtk: modifiedTokens) {
+    		sortedPostings.add(INDEX.get(mtk));
+    	}
+    	    	
+    	if(!sortedPostings.isEmpty()) {
+    		//sort by document frequency
+    		Collections.sort(sortedPostings);
+    		
+    		//process in ascending order of frequency
+    		LinkedList<String> mergedList = sortedPostings.get(0).getPostingList();
+        	for(int i = 1, n = sortedPostings.size(); i < n; i++) {
+        		mergedList = PostingListMerging.intersect(mergedList, sortedPostings.get(i).getPostingList());
+        	}
+    	}
     	
-    	//process in ascending order of frequency
-    	//Sang Sang's placeholder
-    	//PostingListMerging.intersect(p1, p2);
-    	
-    	//placeholder
-		return null;
+		return modifiedTokens;
 	}
+	*/
 	
 	public static void indexing() {
 		//tokenize corpus
-		//Divya's placeholder
-		ArrayList<String> fileList = new ArrayList<String>();
-		ArrayList<Pair> token_docId = new ArrayList<Pair>();
-        
-		String fileName = null;
-		String docId = null;
-		
-		//fileList = ProjectToolkit.listDir("C:/Divya/NTU/Information Retrival/project/test_mail");
-		String workingDir = System.getProperty("user.dir");
-		fileList = ProjectToolkit.listDir(workingDir.concat("/Information Retrival/project/HillaryEmails"));
-		
-		for(int i = 0; i < fileList.size(); i++){
-			String content = ProjectToolkit.readTextFile(fileList.get(i));
-			fileName = new File(fileList.get(i)).getName();
-			docId = ProjectTokenize.getDocId(fileName);
-			
-			ArrayList<Pair> token_docIdTemp = ProjectTokenize.tokenize(content,docId);
-			token_docId.addAll(token_docIdTemp);	
+		ArrayList<Pair> tokenIdPairs = ProjectTokenizer.tokenizeCorpus(CORPUS_DIR);
+		//debugging:
+		for(Pair p: tokenIdPairs) {
+			System.out.println(p.getToken() + " => " + p.getdocId());
 		}
 		
 		//modify tokens using linguistic modules
-		//Divya's placeholder
-		ArrayList<Pair> tupleNew = LinguisticModules.rmSymbolLower(token_docId);
-		ArrayList<Pair> tupleStem = LinguisticModules.stemming(tupleNew);
-
-		
+		ArrayList<Pair> modifiedTokenIdPairs = LinguisticModules.modifyTokens(tokenIdPairs);
+		//debugging:
+		for(Pair p: modifiedTokenIdPairs) {
+			System.out.println(p.getToken() + " => " + p.getdocId());
+		}
+				
 		//sort modified token-docId pairs
-		//Serene's placeholder		
 		//transform token-docId pairs into dictionary and postings
-		//Serene's placeholder
-		//this step should update INDEX
-		INDEX = sortTokens.main(tupleStem);
-		
+		INDEX = Indexer.createIndex(modifiedTokenIdPairs);
+		//debugging:
+		for(Map.Entry<String, LinkedList> entry : INDEX.entrySet()) {
+			//System.out.println(entry.getKey());
+			//System.out.println(entry.getValue());
+		}
 	}
+	
+	/*
+	public static void indexingTest() {
+		LinkedList<String> p1 = new LinkedList<String>();
+		p1.add("1");
+		p1.add("2");
+		p1.add("4");
+		LinkedList<String> p2 = new LinkedList<String>();
+		p2.add("2");
+		p2.add("3");
+		p2.add("4");
+		p2.add("5");
+		LinkedList<String> p3 = new LinkedList<String>();
+		p3.add("4");
+		
+		Posting pt1 = new Posting(3, p1);
+		Posting pt2 = new Posting(4, p2);
+		Posting pt3 = new Posting(1, p3);
+		
+		INDEX.put("a", pt1);
+		INDEX.put("b", pt2);
+		INDEX.put("c", pt3);
+		//debugging:
+		//for(Map.Entry<String, Posting> entry : INDEX.entrySet()) {
+			//System.out.println(entry.getKey());
+			//System.out.println(entry.getValue());
+		//}
+	}
+	*/
 	
 	public static void showProcessingTime(String processDescription, long startTime, long endTime) {
 		System.out.println("Time for " + processDescription + ": " + (endTime - startTime));
@@ -131,11 +148,18 @@ public class IRApplication {
 		System.out.println("Memory for " + processDescription + ": " + (totalMemory - freeMemory));
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) {		
+		
 		long startIndexing = System.currentTimeMillis();
 		indexing();
+		//indexingTest();
 		long endIndexing = System.currentTimeMillis();
 		showProcessingTime("indexing", startIndexing, endIndexing);
+		
+		//debugging:
+		//ArrayList<String> queryTokens = processQuery("b c");
+		//for(String q: queryTokens)
+		//	System.out.println(q);
 		
 		Runtime runtime = Runtime.getRuntime();
 		runtime.gc();
