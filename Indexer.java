@@ -1,72 +1,49 @@
-import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 
 public class Indexer {
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static Map<String,LinkedList> createIndex(ArrayList<Pair> list) {
-		// TODO Auto-generated method stub
-		// Sorting tokens
+	public static Map<String, Posting> createIndex(ArrayList<Pair> modifiedTokenIdPairs) {
+		
+		//sorting by token then by docId
+		Collections.sort(modifiedTokenIdPairs);
+		//debug
+		//for(Pair p: modifiedTokenIdPairs) 
+		//	System.out.println(p);
+		
+		Map<String, Posting> index = new LinkedHashMap<String, Posting>();
+		
+		Pair pairNeedle = new Pair();
+		Posting postingPointer = null;
+		for(Pair processingPair: modifiedTokenIdPairs) {
+			String tk = processingPair.getToken();
+			String docId = processingPair.getdocId();
+			if(tk.equals(pairNeedle.getToken())) {	//same token
+				if(!docId.equals(pairNeedle.getdocId())) { //different docId
+					//update the doc frequency and posting list of an existing token
+					postingPointer.incrementDocFreq();
+					postingPointer.updatePostingList(docId);
+					
+					//update needle
+					pairNeedle.setdocId(docId);
+				}
+			} else { //new/different token
+				//initialize and add a new entry to index
+				LinkedList<String> docIdList = new LinkedList<String>();
+				docIdList.add(docId);
+				Posting newPosting = new Posting(1, docIdList);
+				index.put(tk, newPosting);
 				
-		class comparator implements Comparator <Pair>{
-			@Override
-			public int compare(Pair o1, Pair o2) {
-				// TODO Auto-generated method stub
-				if ( o1.getToken().compareTo(o2.getToken())<0)
-					return -1; 
-				else if ( o1.getToken().compareTo(o2.getToken())>0)
-					return 1;				
-				else if( o1.getdocId().compareTo(o2.getdocId())<0)
-					return -1;
-				else if( o1.getdocId().compareTo(o2.getdocId())>0)
-					return 1;
-				return 0;
-			}			
-		}
-		
-		comparator c = new comparator();
-		list.sort(c);
-		Map<String,LinkedList> index = new LinkedHashMap<String,LinkedList>();
-		
-		
-		int j = 0;
-		ArrayList ll = new ArrayList<>();
-		Entry<String,Integer> entry ;
-		for( int i = 0; i < list.size()-2; i = j) {
-			
-			entry = new AbstractMap.SimpleEntry(list.get(i).getToken(), 1) ; 
-			
-			ll.add(list.get(i).getdocId());
-			// For producing term frequencies (collapsing duplicate tokens) : best case (all unique tokens) = O(1) (inner do-while will not be executed)
-			// average case: let m = most frequent token then it is O(n*m)
-			if(entry.getKey().equals(list.get(i+1).getToken()) ) {
-				j = i+1;
-				// O(m) where m << n in practical cases there won't be an entire index all of same token keyword				
-				do {
-					entry.setValue(entry.getValue()+1);
-					ll.add(list.get(j+1).getdocId());
-					++j;
-				}while(entry.getKey().equals(list.get(j).getToken()));
-				
+				//update needle and pointer
+				pairNeedle.setToken(tk);
+				pairNeedle.setdocId(docId);
+				postingPointer = newPosting;
 			}
-			ll.add(0, entry.getValue());
-			index.put(entry.getKey(),new LinkedList(ll)) ;
-			
-			ll.clear();
-			//ll = new LinkedList<>();
-			j++;
-			
 		}
 		
-		//Print Map contents
-//		System.out.println(index.keySet().toString());
-//		System.out.println(index.values().toString());	
-		System.out.println("Sorting index is done !");	
 		return index;
 	}
 

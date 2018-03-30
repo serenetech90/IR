@@ -30,8 +30,16 @@ public class Posting implements Comparable<Posting> {
         this.postingList = postingList;
     }
     
+    public void incrementDocFreq() {
+        docFreq++;
+    }
+    
+    public void updatePostingList(String val) {
+    	postingList.add(val);
+    }
+    
     public String toString() {
-    	return docFreq + " => " + postingList.toString();
+    	return docFreq + ": " + postingList.toString();
     }
     
     public int compareTo(Posting p)

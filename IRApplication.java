@@ -10,47 +10,67 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
+import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
+import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.awt.event.ActionEvent;
 	
 public class IRApplication {
 	private static String CORPUS_DIR = "C:/Users/TANS0348/Desktop/testfiles2/";
 	private static Map<String, Posting> INDEX = new LinkedHashMap<String, Posting>();
-	//private static Map<String, LinkedList> INDEX = new LinkedHashMap<String, LinkedList>();
-	
 	
 	public IRApplication() {
 		JFrame guiFrame = new JFrame();
 		
 		guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		guiFrame.setTitle("Information Retrieval System");
-		guiFrame.setSize(580, 480);
+		guiFrame.setSize(560, 550);
 
 		//center the JFrame in the middle of the screen
 		guiFrame.setLocationRelativeTo(null);
 		
 		final JPanel mainPanel = new JPanel();
-				
-		mainPanel.add(new JLabel("Search: "));
-		JTextField tfSearch = new JTextField(40);
-		mainPanel.add(tfSearch);
+		mainPanel.setBorder(new EmptyBorder(7, 10, 10, 10));
 		
-		JTextArea taResults = new JTextArea(20, 50);
+		final JPanel searchPanel = new JPanel();
+		searchPanel.setBorder(new EmptyBorder(5, 10, 10, 10));
+		searchPanel.add(new JLabel("Search: "));
+		JTextField tfSearch = new JTextField(40);
+		tfSearch.setMargin(new Insets(4,4,4,4));
+		searchPanel.add(tfSearch);
+		mainPanel.add(searchPanel);
+		
+		int taResultsWidth = (int) (45 * 1.57);
+		JTextArea taResults = new JTextArea(28, 45);
 		taResults.setEditable(false);
-		//mainPanel.add(new JLabel("Result(s): "));
+		taResults.setMargin(new Insets(7,7,7,7));
 		mainPanel.add(taResults);
 		
 		tfSearch.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {            	
-            	long startQuery = System.currentTimeMillis();
+            public void actionPerformed(ActionEvent e) {
             	String query = tfSearch.getText().trim();
+            	long startQuery = System.currentTimeMillis();
             	LinkedList<String> results = processQuery(query);
-            	taResults.setText(String.join("\n", results));
             	long endQuery = System.currentTimeMillis();
-            	showProcessingTime("query '" + query + "'", startQuery, endQuery);
+            	String showText = "";
+            	int resultSize = 0;
+            	if(results == null) {
+            		showText = "Your search - " + query + " - did not match any documents.";
+            	} else {
+            		showText = String.join("\n", results);
+            		
+            		resultSize = results.size();
+            	}
+            	
+            	showText += "\n";
+        		for(int i=0; i<taResultsWidth; i++) 
+        			showText += "- ";
+        		showText += "\n";
+        		showText += resultSize + " result" + (resultSize > 1? "s": "") + " (Processing time: " + getProcessingTime(startQuery, endQuery) + " seconds).";
+            	taResults.setText(showText);
             }
         });
 		
@@ -65,7 +85,12 @@ public class IRApplication {
     	//get the posting list for the query
     	List<Posting> sortedPostings =  new ArrayList<Posting>();
     	for(String mtk: modifiedTokens) {
-    		sortedPostings.add(INDEX.get(mtk));
+    		Posting p = INDEX.get(mtk);
+    		if(p == null) {	//abort if the query contains a term that doesn't exist in the corpus 
+    			return null;
+    		} else {
+    			sortedPostings.add(INDEX.get(mtk));
+    		}
     	}
     	
     	LinkedList<String> mergedList = null;
@@ -83,32 +108,29 @@ public class IRApplication {
 		return mergedList;
 	}
 	
-	/*
 	public static void indexing() {
 		//tokenize corpus
 		ArrayList<Pair> tokenIdPairs = ProjectTokenizer.tokenizeCorpus(CORPUS_DIR);
 		//debugging:
-		for(Pair p: tokenIdPairs) {
-			System.out.println(p.getToken() + " => " + p.getdocId());
-		}
+		//for(Pair p: tokenIdPairs) {
+		//	System.out.println(p);
+		//}
 		
 		//modify tokens using linguistic modules
 		ArrayList<Pair> modifiedTokenIdPairs = LinguisticModules.modifyTokens(tokenIdPairs);
 		//debugging:
-		for(Pair p: modifiedTokenIdPairs) {
-			System.out.println(p.getToken() + " => " + p.getdocId());
-		}
+		//for(Pair p: modifiedTokenIdPairs) {
+		//	System.out.println(p);
+		//}
 				
 		//sort modified token-docId pairs
 		//transform token-docId pairs into dictionary and postings
 		INDEX = Indexer.createIndex(modifiedTokenIdPairs);
 		//debugging:
-		for(Map.Entry<String, LinkedList> entry : INDEX.entrySet()) {
-			//System.out.println(entry.getKey());
-			//System.out.println(entry.getValue());
-		}
+		//for(Map.Entry<String, Posting> entry : INDEX.entrySet()) {
+		//	System.out.println(entry.getKey() + " => " + entry.getValue());
+		//}
 	}
-	*/
 	
 	public static void indexingTest() {
 		LinkedList<String> p1 = new LinkedList<String>();
@@ -138,30 +160,34 @@ public class IRApplication {
 	}
 	
 	
-	public static void showProcessingTime(String processDescription, long startTime, long endTime) {
-		System.out.println("Time for " + processDescription + ": " + (endTime - startTime));
+	public static String getProcessingTime(long startTime, long endTime) {
+		double timeSeconds = (endTime - startTime) / 1000.0;
+		DecimalFormat df = new DecimalFormat("#.####");
+		return df.format(timeSeconds);
 	}
 	
-	public static void showMemory(String processDescription, long totalMemory, long freeMemory) {
-		System.out.println("Memory for " + processDescription + ": " + (totalMemory - freeMemory));
+	public static String getMemory(long beforeMemory, long afterMemory) {
+		double memoryKbytes = (afterMemory - beforeMemory) / 1024.0;
+		DecimalFormat df = new DecimalFormat("#.##");
+		return df.format(memoryKbytes);
 	}
 	
 	public static void main(String[] args) {
-		
-		long startIndexing = System.currentTimeMillis();
-		//indexing();
-		indexingTest();
-		long endIndexing = System.currentTimeMillis();
-		showProcessingTime("indexing", startIndexing, endIndexing);
-		
-		//debugging:
-		//LinkedList<String> queryTokens = processQuery("b a");
-		//for(String q: queryTokens)
-		//	System.out.println(q);
-		
 		Runtime runtime = Runtime.getRuntime();
 		runtime.gc();
-		showMemory("indexing", runtime.totalMemory(), runtime.freeMemory());
+		runtime.gc();
+		runtime.gc();
+		long usedMemoryBefore = runtime.totalMemory() - runtime.freeMemory();
+		long startIndexing = System.currentTimeMillis();
+		indexing();
+		//indexingTest();
+		long endIndexing = System.currentTimeMillis();
+		runtime.gc();
+		runtime.gc();
+		runtime.gc();
+		long usedMemoryAfter = runtime.totalMemory() - runtime.freeMemory();
+		System.out.println("Time for indexing: " + getProcessingTime(startIndexing, endIndexing) + " seconds.");
+		System.out.println("Memory for indexing: " + getMemory(usedMemoryBefore, usedMemoryAfter) + " kilobytes.");
 		
 		new IRApplication();
 	}
