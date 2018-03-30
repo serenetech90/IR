@@ -68,7 +68,8 @@ public class IRApplication {
             		
             		resultSize = results.size();
             	}
-            	String showSummary = resultSize + " result" + (resultSize > 1? "s": "") + " (Processing time: " + getProcessingTime(startQuery, endQuery) + " seconds).";
+            	String processingTime = getProcessingTime(startQuery, endQuery);
+            	String showSummary = resultSize + " result" + (resultSize > 1? "s": "") + " (Processing time: " + processingTime + " second" + (processingTime.equals("0")? "" : "s") + ").";
             	showSummary += "\n";
         		for(int i=0; i<taResultsWidth; i++) 
         			showSummary += "- ";
