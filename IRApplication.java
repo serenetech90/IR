@@ -8,18 +8,21 @@ import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.awt.event.ActionEvent;
 	
 public class IRApplication {
-	private static String CORPUS_DIR = "C:/Users/TANS0348/Desktop/testfiles2/";
+	private static String CORPUS_DIR = "C:/Users/TANS0348/Dropbox/courses/CI6226/HillaryEmails/HillaryEmails/";
+	//private static String CORPUS_DIR = "C:/Users/TANS0348/Desktop/testfiles2";
 	private static Map<String, Posting> INDEX = new LinkedHashMap<String, Posting>();
 	
 	public IRApplication() {
@@ -33,7 +36,6 @@ public class IRApplication {
 		guiFrame.setLocationRelativeTo(null);
 		
 		final JPanel mainPanel = new JPanel();
-		mainPanel.setBorder(new EmptyBorder(7, 10, 10, 10));
 		
 		final JPanel searchPanel = new JPanel();
 		searchPanel.setBorder(new EmptyBorder(5, 10, 10, 10));
@@ -43,11 +45,12 @@ public class IRApplication {
 		searchPanel.add(tfSearch);
 		mainPanel.add(searchPanel);
 		
-		int taResultsWidth = (int) (45 * 1.57);
-		JTextArea taResults = new JTextArea(28, 45);
+		int taResultsWidth = (int) (45 * 1.5);
+		JTextArea taResults = new JTextArea(26, 45);
 		taResults.setEditable(false);
 		taResults.setMargin(new Insets(7,7,7,7));
-		mainPanel.add(taResults);
+		JScrollPane scrollResults = new JScrollPane(taResults);
+		mainPanel.add(scrollResults);
 		
 		tfSearch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -55,26 +58,27 @@ public class IRApplication {
             	long startQuery = System.currentTimeMillis();
             	LinkedList<String> results = processQuery(query);
             	long endQuery = System.currentTimeMillis();
-            	String showText = "";
+            	
+            	String showResults = "";
             	int resultSize = 0;
             	if(results == null) {
-            		showText = "Your search - " + query + " - did not match any documents.";
+            		showResults = "Your search - " + query + " - did not match any documents.";
             	} else {
-            		showText = String.join("\n", results);
+            		showResults = String.join("\n", results);
             		
             		resultSize = results.size();
             	}
-            	
-            	showText += "\n";
+            	String showSummary = resultSize + " result" + (resultSize > 1? "s": "") + " (Processing time: " + getProcessingTime(startQuery, endQuery) + " seconds).";
+            	showSummary += "\n";
         		for(int i=0; i<taResultsWidth; i++) 
-        			showText += "- ";
-        		showText += "\n";
-        		showText += resultSize + " result" + (resultSize > 1? "s": "") + " (Processing time: " + getProcessingTime(startQuery, endQuery) + " seconds).";
-            	taResults.setText(showText);
+        			showSummary += "- ";
+        		showSummary += "\n";
+        		taResults.setText(showSummary + showResults);
             }
         });
 		
-		guiFrame.add(mainPanel, BorderLayout.NORTH);
+		guiFrame.add(mainPanel, BorderLayout.CENTER);
+		guiFrame.add(mainPanel);
 		guiFrame.setVisible(true);
 	}
 	
@@ -159,16 +163,15 @@ public class IRApplication {
 		//}
 	}
 	
-	
 	public static String getProcessingTime(long startTime, long endTime) {
 		double timeSeconds = (endTime - startTime) / 1000.0;
-		DecimalFormat df = new DecimalFormat("#.####");
+		DecimalFormat df = new DecimalFormat("#.######");
 		return df.format(timeSeconds);
 	}
 	
 	public static String getMemory(long beforeMemory, long afterMemory) {
 		double memoryKbytes = (afterMemory - beforeMemory) / 1024.0;
-		DecimalFormat df = new DecimalFormat("#.##");
+		DecimalFormat df = new DecimalFormat("#.###");
 		return df.format(memoryKbytes);
 	}
 	
