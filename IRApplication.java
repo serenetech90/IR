@@ -18,8 +18,8 @@ import java.awt.event.ActionEvent;
 	
 public class IRApplication {
 	private static String CORPUS_DIR = "C:/Users/TANS0348/Desktop/testfiles2/";
-	//private static Map<String, Posting> INDEX = new LinkedHashMap<String, Posting>();
-	private static Map<String, LinkedList> INDEX = new LinkedHashMap<String, LinkedList>();
+	private static Map<String, Posting> INDEX = new LinkedHashMap<String, Posting>();
+	//private static Map<String, LinkedList> INDEX = new LinkedHashMap<String, LinkedList>();
 	
 	
 	public IRApplication() {
@@ -44,24 +44,21 @@ public class IRApplication {
 		mainPanel.add(taResults);
 		
 		tfSearch.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	/*
+            public void actionPerformed(ActionEvent e) {            	
             	long startQuery = System.currentTimeMillis();
             	String query = tfSearch.getText().trim();
-            	ArrayList<String> results = processQuery(query);
+            	LinkedList<String> results = processQuery(query);
             	taResults.setText(String.join("\n", results));
             	long endQuery = System.currentTimeMillis();
             	showProcessingTime("query '" + query + "'", startQuery, endQuery);
-            	*/
             }
         });
 		
 		guiFrame.add(mainPanel, BorderLayout.NORTH);
 		guiFrame.setVisible(true);
 	}
-
-	/*
-	public static ArrayList<String> processQuery(String query) { 
+	
+	public static LinkedList<String> processQuery(String query) { 
     	ArrayList<String> tokens = ProjectTokenizer.tokenizeQuery(query);
     	ArrayList<String> modifiedTokens = LinguisticModules.modifyQueryTokens(tokens);
     
@@ -70,22 +67,23 @@ public class IRApplication {
     	for(String mtk: modifiedTokens) {
     		sortedPostings.add(INDEX.get(mtk));
     	}
-    	    	
+    	
+    	LinkedList<String> mergedList = null;
     	if(!sortedPostings.isEmpty()) {
     		//sort by document frequency
     		Collections.sort(sortedPostings);
     		
     		//process in ascending order of frequency
-    		LinkedList<String> mergedList = sortedPostings.get(0).getPostingList();
+    		mergedList = sortedPostings.get(0).getPostingList();
         	for(int i = 1, n = sortedPostings.size(); i < n; i++) {
         		mergedList = PostingListMerging.intersect(mergedList, sortedPostings.get(i).getPostingList());
         	}
     	}
     	
-		return modifiedTokens;
+		return mergedList;
 	}
-	*/
 	
+	/*
 	public static void indexing() {
 		//tokenize corpus
 		ArrayList<Pair> tokenIdPairs = ProjectTokenizer.tokenizeCorpus(CORPUS_DIR);
@@ -110,8 +108,8 @@ public class IRApplication {
 			//System.out.println(entry.getValue());
 		}
 	}
+	*/
 	
-	/*
 	public static void indexingTest() {
 		LinkedList<String> p1 = new LinkedList<String>();
 		p1.add("1");
@@ -138,7 +136,7 @@ public class IRApplication {
 			//System.out.println(entry.getValue());
 		//}
 	}
-	*/
+	
 	
 	public static void showProcessingTime(String processDescription, long startTime, long endTime) {
 		System.out.println("Time for " + processDescription + ": " + (endTime - startTime));
@@ -148,16 +146,16 @@ public class IRApplication {
 		System.out.println("Memory for " + processDescription + ": " + (totalMemory - freeMemory));
 	}
 	
-	public static void main(String[] args) {		
+	public static void main(String[] args) {
 		
 		long startIndexing = System.currentTimeMillis();
-		indexing();
-		//indexingTest();
+		//indexing();
+		indexingTest();
 		long endIndexing = System.currentTimeMillis();
 		showProcessingTime("indexing", startIndexing, endIndexing);
 		
 		//debugging:
-		//ArrayList<String> queryTokens = processQuery("b c");
+		//LinkedList<String> queryTokens = processQuery("b a");
 		//for(String q: queryTokens)
 		//	System.out.println(q);
 		

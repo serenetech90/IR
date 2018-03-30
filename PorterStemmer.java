@@ -17,8 +17,6 @@
  * along with Porter Stemmer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package information_retrival;
-
 import java.util.Locale;
 
 /**
