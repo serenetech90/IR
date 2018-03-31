@@ -17,6 +17,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.awt.event.ActionEvent;
 	
@@ -29,8 +30,8 @@ public class IRApplication {
 		JFrame guiFrame = new JFrame();
 		
 		guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		guiFrame.setTitle("Information Retrieval System");
-		guiFrame.setSize(560, 550);
+		guiFrame.setTitle("Information Retrieval System with String Document Id");
+		guiFrame.setSize(560, 395);
 
 		//center the JFrame in the middle of the screen
 		guiFrame.setLocationRelativeTo(null);
@@ -46,7 +47,7 @@ public class IRApplication {
 		mainPanel.add(searchPanel);
 		
 		int taResultsWidth = (int) (45 * 1.5);
-		JTextArea taResults = new JTextArea(26, 45);
+		JTextArea taResults = new JTextArea(16, 45);
 		taResults.setEditable(false);
 		taResults.setMargin(new Insets(7,7,7,7));
 		JScrollPane scrollResults = new JScrollPane(taResults);
@@ -62,7 +63,8 @@ public class IRApplication {
             	String showResults = "";
             	int resultSize = 0;
             	if(results == null) {
-            		showResults = "Your search - " + query + " - did not match any documents.";
+            		//showResults = "Your search - " + query + " - did not match any documents.";
+            		showResults = "Your search did not match any documents.";
             	} else {
             		showResults = String.join("\n", results);
             		
@@ -96,6 +98,11 @@ public class IRApplication {
     		} else {
     			sortedPostings.add(INDEX.get(mtk));
     		}
+    		/*
+    		if(p != null) {
+    			sortedPostings.add(INDEX.get(mtk));
+    		}
+    		*/
     	}
     	
     	LinkedList<String> mergedList = null;
@@ -131,10 +138,30 @@ public class IRApplication {
 		//sort modified token-docId pairs
 		//transform token-docId pairs into dictionary and postings
 		INDEX = Indexer.createIndex(modifiedTokenIdPairs);
+		//writeToCsv();
 		//debugging:
 		//for(Map.Entry<String, Posting> entry : INDEX.entrySet()) {
 		//	System.out.println(entry.getKey() + " => " + entry.getValue());
 		//}
+	}
+	
+	public static void writeToCsv() {
+		try {
+			String OUTPUT_DETAILS_CSV = "C:/Users/TANS0348/Desktop/termfrequency.csv";
+			FileWriter writer = new FileWriter(OUTPUT_DETAILS_CSV);
+			writer.append("token,docFrequency");
+			writer.append('\n');
+			for(Map.Entry<String, Posting> entry : INDEX.entrySet()) {
+				writer.append(entry.getKey());
+				writer.append(',');
+				writer.append(Integer.toString(entry.getValue().getDocFreq()));
+				writer.append('\n');
+			}
+			writer.flush();
+		    writer.close();
+		}catch(Exception e) {
+			
+		}
 	}
 	
 	public static void indexingTest() {

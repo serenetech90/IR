@@ -17,7 +17,13 @@ public class ProjectTokenizer {
 		ArrayList<Pair> token_docId = new ArrayList<Pair>();
 		String[] tokens = content.split("\\s+");
 		for(String tk: tokens) {
+			/*
 			tk = tk.replaceAll("[^a-zA-Z0-9]", "");
+			if(!tk.isEmpty()) {
+				Pair p = new Pair(tk, docId);
+				token_docId.add(p);
+			}
+			*/
 			if(!tk.isEmpty()) {
 				Pair p = new Pair(tk, docId);
 				token_docId.add(p);
@@ -30,24 +36,16 @@ public class ProjectTokenizer {
 		ArrayList<String> validTokens = new ArrayList<String>();
 		String[] tokens = content.split("\\s+");
 		for(String tk: tokens) {
+			/*
 			tk = tk.replaceAll("[^a-zA-Z0-9]", "");
+			if(!tk.isEmpty()) {
+				validTokens.add(tk);
+			}
+			*/
 			if(!tk.isEmpty()) {
 				validTokens.add(tk);
 			}
 		}
 		return validTokens;
 	}
-
-	/*
-	public static String getDocId(String fileName) {
-		int docId = 0;
-		try {
-			String[] fileNameBits = fileName.split("\\.");
-			docId = Integer.parseInt(fileNameBits[0]);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return Integer.toString(docId);
-	}
-	*/
 }
