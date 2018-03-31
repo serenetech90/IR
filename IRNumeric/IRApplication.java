@@ -57,7 +57,7 @@ public class IRApplication {
             public void actionPerformed(ActionEvent e) {
             	String query = tfSearch.getText().trim();
             	long startQuery = System.currentTimeMillis();
-            	LinkedList<Integer> results = processQuery(query);
+            	LinkedList<String> results = processQuery(query);
             	long endQuery = System.currentTimeMillis();
             	
             	String showResults = "";
@@ -66,9 +66,7 @@ public class IRApplication {
             		//showResults = "Your search - " + query + " - did not match any documents.";
             		showResults = "Your search did not match any documents.";
             	} else {
-            		for(int r: results) {
-            			showResults += FILELIST.get(r) + "\n";
-            		}
+            		showResults = String.join("\n", results);
             		
             		resultSize = results.size();
             	}
@@ -87,7 +85,7 @@ public class IRApplication {
 		guiFrame.setVisible(true);
 	}
 	
-	public static LinkedList<Integer> processQuery(String query) { 
+	public static LinkedList<String> processQuery(String query) { 
     	ArrayList<String> tokens = ProjectTokenizer.tokenizeQuery(query);
     	ArrayList<String> modifiedTokens = LinguisticModules.modifyQueryTokens(tokens);
     
@@ -105,7 +103,7 @@ public class IRApplication {
     	LinkedList<Integer> mergedList = null;
     	if(!sortedPostings.isEmpty()) {
     		//sort by document frequency
-    		Collections.sort(sortedPostings);
+    		//Collections.sort(sortedPostings);
     		
     		//process in ascending order of frequency
     		mergedList = sortedPostings.get(0).getPostingList();
@@ -114,7 +112,12 @@ public class IRApplication {
         	}
     	}
     	
-		return mergedList;
+    	LinkedList<String> resultList = new LinkedList<String>();
+    	for(int m: mergedList) {
+    		resultList.add(FILELIST.get(m));
+    	}
+    	
+		return resultList;
 	}
 	
 	public static void indexing() {
