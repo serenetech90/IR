@@ -30,8 +30,8 @@ public class IRApplication {
 		JFrame guiFrame = new JFrame();
 		
 		guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		guiFrame.setTitle("Information Retrieval System");
-		guiFrame.setSize(560, 550);
+		guiFrame.setTitle("Information Retrieval System with Numeric Document Id");
+		guiFrame.setSize(560, 395);
 
 		//center the JFrame in the middle of the screen
 		guiFrame.setLocationRelativeTo(null);
@@ -47,7 +47,7 @@ public class IRApplication {
 		mainPanel.add(searchPanel);
 		
 		int taResultsWidth = (int) (45 * 1.5);
-		JTextArea taResults = new JTextArea(26, 45);
+		JTextArea taResults = new JTextArea(16, 45);
 		taResults.setEditable(false);
 		taResults.setMargin(new Insets(7,7,7,7));
 		JScrollPane scrollResults = new JScrollPane(taResults);
@@ -63,7 +63,8 @@ public class IRApplication {
             	String showResults = "";
             	int resultSize = 0;
             	if(results == null) {
-            		showResults = "Your search - " + query + " - did not match any documents.";
+            		//showResults = "Your search - " + query + " - did not match any documents.";
+            		showResults = "Your search did not match any documents.";
             	} else {
             		for(int r: results) {
             			showResults += FILELIST.get(r) + "\n";

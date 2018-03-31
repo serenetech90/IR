@@ -17,7 +17,7 @@ public class ProjectTokenizer {
 		ArrayList<Pair> token_docId = new ArrayList<Pair>();
 		String[] tokens = content.split("\\s+");
 		for(String tk: tokens) {
-			tk = tk.replaceAll("[^a-zA-Z0-9]", "");
+			//tk = tk.replaceAll("[^a-zA-Z0-9]", "");
 			if(!tk.isEmpty()) {
 				Pair p = new Pair(tk, docId);
 				token_docId.add(p);
@@ -30,7 +30,7 @@ public class ProjectTokenizer {
 		ArrayList<String> validTokens = new ArrayList<String>();
 		String[] tokens = content.split("\\s+");
 		for(String tk: tokens) {
-			tk = tk.replaceAll("[^a-zA-Z0-9]", "");
+			//tk = tk.replaceAll("[^a-zA-Z0-9]", "");
 			if(!tk.isEmpty()) {
 				validTokens.add(tk);
 			}
